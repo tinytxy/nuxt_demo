@@ -24,7 +24,8 @@
         :c_desc="pageConfig.mainBanner.c_desc" 
         :src="pageConfig.mainBanner.src"
         class="full-width"
-        v-serverFn="isClient">
+        v-serverFn="isClient"
+        v-clientFn="isClient">
     </div>
     <div class="selectable-banner">
         <!-- 副banner -->
@@ -300,9 +301,9 @@
 </template>
 
 <script>
-import { getActivityPageByNumber } from '../../request'
-import { getToken ,getActivityCode } from '../../request/getToken'
-import setFontSize from '../../assets/js/autoFontsize.min.js'
+import { getActivityPageByNumber } from '@/request'
+import { getToken ,getActivityCode } from '@/request/getToken'
+import setFontSize from '@/assets/js/autoFontsize.min.js'
 export default {
   data() {
     return {
@@ -472,9 +473,14 @@ export default {
   mounted () {
     setFontSize(document, window)
     const that = this
-    setTimeout(() => {
+    // 动态设置页面
+    if(this.$route.query.mode === "server") {
+      // 后台
+      that.isClient = false
+    }else if(this.$route.query.mode === "client"){
+      // 居民端
       that.isClient = true
-    }, 3000);
+    }
   },
   components: {
     // VueDraggableResizable
@@ -510,21 +516,21 @@ export default {
   directives: {
     clientFn:{
       // click
-      bind: function(el,binding,vnode) {
+      update: function(el,binding,vnode) {
         if(binding.value){
           el.onclick = function(e){
-            console.log('客户端')
+            alert('客户端click');
           }
         }
       }
     },
     serverFn:{
       update: function(el,binding,vnode){
-        if(binding.value){
-          console.log(el)
+        if(!binding.value){
+          // console.log(el)
           // click
           el.onclick = function(e){
-            console.log('后台配置click');
+            alert('后台配置click');
           };
           // mouseenter
           el.onmouseenter = function(e){
