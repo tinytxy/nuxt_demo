@@ -12,7 +12,8 @@
         :c_height="pageConfig.logo.c_height" 
         :c_desc="pageConfig.logo.c_desc" 
         :src="pageConfig.logo.src"
-        class="act-logo" />
+        class="act-logo"
+        />
         <!-- logo -->
         <img 
         :id="pageConfig.mainBanner.id" 
@@ -22,7 +23,8 @@
         :c_height="pageConfig.mainBanner.c_height" 
         :c_desc="pageConfig.mainBanner.c_desc" 
         :src="pageConfig.mainBanner.src"
-        class="full-width">
+        class="full-width"
+        v-serverFn="isClient">
     </div>
     <div class="selectable-banner">
         <!-- 副banner -->
@@ -302,9 +304,9 @@ import { getActivityPageByNumber } from '../../request'
 import { getToken ,getActivityCode } from '../../request/getToken'
 import setFontSize from '../../assets/js/autoFontsize.min.js'
 export default {
-  
   data() {
     return {
+      isClient: false,
       // 页面配置
       pageConfig: {
         page: {
@@ -469,6 +471,10 @@ export default {
   },
   mounted () {
     setFontSize(document, window)
+    const that = this
+    setTimeout(() => {
+      that.isClient = true
+    }, 3000);
   },
   components: {
     // VueDraggableResizable
@@ -499,6 +505,37 @@ export default {
         const jsonObj = JSON.parse(json);
         this.setPageConfig(jsonObj);
       });
+    }
+  },
+  directives: {
+    clientFn:{
+      // click
+      bind: function(el,binding,vnode) {
+        if(binding.value){
+          el.onclick = function(e){
+            console.log('客户端')
+          }
+        }
+      }
+    },
+    serverFn:{
+      update: function(el,binding,vnode){
+        if(binding.value){
+          console.log(el)
+          // click
+          el.onclick = function(e){
+            console.log('后台配置click');
+          };
+          // mouseenter
+          el.onmouseenter = function(e){
+            console.log('后台配置mouseenter');
+          };
+          // mouseleave
+          el.onmouseleave = function(e){
+            console.log('后台配置mouseleave');
+          };
+        }
+      }
     }
   }
 }
